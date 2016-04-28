@@ -34,35 +34,14 @@ var analyzer = {
                     // message
                     var messageText = current.text();
 
-                    if (!nameCount[messageName]) {
-                        nameCount[messageName] = 0;
-                    }
+                    _.update(nameCount, messageName, x => (x || 0) + 1);
+        
+                    _.update(nameMessageMap, messageName, x => _.concat((x || []), messageText));
 
-                    nameCount[messageName] += 1;
+                    _.update(nameDateMap, [messageName, messageDate], x => _.union(x, threadName));
                     
-                    if (!nameMessageMap[messageName]) {
-                        nameMessageMap[messageName] = [];
-                    }
-                    
-                    nameMessageMap[messageName].push(messageText);
-
-                    if (!nameDateMap[messageName]) {
-                        nameDateMap[messageName] = {};
-                    }
-
-                    if (!nameDateMap[messageName][messageDate]) {
-                        nameDateMap[messageName][messageDate] = [];
-                    }
-
-                    if (nameDateMap[messageName][messageDate].indexOf(threadName) === -1) {
-                        nameDateMap[messageName][messageDate].push(threadName);
-                    }
-
-                    if (!threadNameDateMap[threadName][messageDate]) {
-                        threadNameDateMap[threadName][messageDate] = [];
-                    }
-
-                    threadNameDateMap[threadName][messageDate].unshift({name: messageName, message: messageText});
+                    _.update(threadNameDateMap, [threadName, messageDate], x => 
+                        _.concat({name: messageName, message: messageText}, (x || [])));
                 }
             })
         });
